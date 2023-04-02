@@ -5,6 +5,8 @@ Simulation Project for CSARCH2
 ## Dev Notes
 
 **Running the Project**
+
+*note: clone this project first on your machine*
 1. On your terminal, do > `cd Decimal32FP-Sim`
 2. also do > `npm install`
 3. then to run app on dev server > `npm run dev`  
