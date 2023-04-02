@@ -20,7 +20,7 @@ export default function TestPage() {
     second is an array of values that it will watch for "changes".
 
     Basically what useEffect does is it detects "changes" in the application
-    and it runs whatever is inside the function when it detects a change.
+    and it runs whatever is inside the function when it detects a change
     */
     useEffect(() => {
         console.log("Value has changed to: ", value);
