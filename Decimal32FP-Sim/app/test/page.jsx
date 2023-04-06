@@ -76,31 +76,33 @@ export default function TestPage() {
       setValue(e.target.value);
     };
   
-    const handleClick = () => {
-      const convertedDec = convert(value);
+    const handleHexClick = () => {
+      const convertedDec = convertHex(value); 
+      setResult(convertedDec.toString());
+    };
+
+    const handleBinaryClick = () => {
+      const convertedDec = convertBinary(value); 
       setResult(convertedDec.toString());
     };
   
-    const convert = (value) => {
-        // TODO: Make check which case the input is in. HEX --> DEC OR BINARY --> DEC
+    const convertHex = (value) => {
         // Case: Input is HEX
-        console.log("Inputted value:" + parseInt(value, 16))
+        console.log("CASE HEX")
+        console.log("Inputted value:" + value)
         // Check if valid input
-        if (!isValidHex(value))
-          return false
+        if (isValidHex(value))
+          return convertHexToDecimal32(value)
+        else return false
+    };
 
-        value = parseInt(value, 16)
-        final = convertHexToDecimal32(value)
-        return final
-
-        // Case: Input is BINARY
-        if(!isValidBinary(value))
-          return false
-        console.log("CASE BINARY")
-        final = convertBinaryToDecimal32(value)
-
-        return final;
-
+    const convertBinary = (value) => {
+      // Case: Input is BINARY
+      console.log("CASE BINARY")
+      console.log("Inputted value:" + value)
+      if(isValidBinary(value))
+        return convertBinaryToDecimal32(value)  
+      else return false
     };
   
     return (
@@ -112,6 +114,7 @@ export default function TestPage() {
           value={value}
           onChange={handleInputChange}
         />
+        TODO: Have two useEffects, one for hex box input and one for binary box input
         <button onClick={handleClick}>Convert</button>
         {result && <h5>Dec 32 Equivalent: {result}</h5>}
       </div>
@@ -151,9 +154,6 @@ function hexToDecimal(hex) {
     if (hexDict.hasOwnProperty(digit)) {
       // Convert the hexadecimal digit to its decimal value and add it to the decimal value
       decimal = decimal * 16 + hexDict[digit];
-    } else {
-      // If the character is not a valid hexadecimal digit, throw an error
-      throw new Error("Invalid hexadecimal digit: " + digit);
     }
   }
 
@@ -161,15 +161,10 @@ function hexToDecimal(hex) {
   return decimal;
 }
 
-function decimalToBinary(decimal) {
-  // Check if the input is a valid positive integer
-  if (!Number.isInteger(decimal) || decimal < 0) {
-    throw new Error("Input must be a positive integer");
-  }
-
+function convertDecimalToBinary(decimal) {
   // Edge case for 0
   if (decimal === 0) {
-    return "0";
+    return "0".padStart(32, "0");
   }
 
   // Initialize an empty string to store the binary representation
@@ -190,31 +185,25 @@ function decimalToBinary(decimal) {
     decimal /= 2;
   }
 
+  // Pad the binary representation with leading zeros to make it 32-bits
+  binary = binary.padStart(32, "0");
+
   // Return the binary representation
   return binary;
 }
 
-function convertHexToDecimal32(hex) { // returns final IEEE-754 Decimal-32 value
-  // convert hex to binary by [hex --> decimal --> binary]
-  // convert hex to decimal
+function convertHexToDecimal32(hex) {
+  // hex --> decimal
   const decimal = hexToDecimal(hex);
-  // convert decimal to binary
-  const binary = decimalToBinary(decimal);
-
-  // since it's binary now, just call convertBinaryToDecimal32(value)
+  // decimal --> binary
+  const binary = convertDecimalToBinary(decimal);
+  // binary --> decimal32
   return convertBinaryToDecimal32(binary);
 }
 
-function convertBinaryToDecimal32(binary) {
-  // Check if the input is a valid binary string
-  if (!/^[01]+$/.test(binary)) {
-    throw new Error("Input must be a valid binary string");
-  }
-
-  // Check if the binary string has exactly 32 bits
-  if (binary.length !== 32) {
-    throw new Error("Input must have exactly 32 bits");
-  }
+function convertBinaryToDecimal32(binary) { // returns final IEEE-754 Decimal-32 value
+  // IEEE-754 Decimal-32 format requires 32 bits to be valid
+  binary = binary.padStart(32, "0");
 
   // Extract the sign, exponent, and mantissa bits from the binary string
   const signBit = binary[0] === '1' ? -1 : 1;
@@ -222,12 +211,12 @@ function convertBinaryToDecimal32(binary) {
   const mantissaBits = binary.slice(9);
 
   // Convert the exponent bits from binary to decimal
-  const exponent = parseInt(exponentBits, 2) - 127;
+  const exponent = parseInt(exponentBits, 2) - 127; // TODO: DO THIS MANUALLY
 
   // Handle special cases based on the exponent bits
   if (exponent === -127) {
     // Denormalized number (exponent = -127)
-    const mantissa = parseInt(mantissaBits, 2) / Math.pow(2, 23);
+    const mantissa = parseInt(mantissaBits, 2) / Math.pow(2, 23); // TODO: Do this manually
     return signBit * mantissa * Math.pow(2, -126);
   } else if (exponent === 128) {
     // Infinity or NaN (exponent = 128)
@@ -238,7 +227,7 @@ function convertBinaryToDecimal32(binary) {
     }
   } else {
     // Normalized number
-    const mantissa = 1 + parseInt(mantissaBits, 2) / Math.pow(2, 23);
+    const mantissa = 1 + parseInt(mantissaBits, 2) / Math.pow(2, 23); // TODO: Do this manually
     return signBit * mantissa * Math.pow(2, exponent);
   }
 }
