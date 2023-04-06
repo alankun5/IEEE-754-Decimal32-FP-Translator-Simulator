@@ -144,12 +144,48 @@ function hexToDecimal(hex) {
   return decimal;
 }
 
+function decimalToBinary(decimal) {
+  // Check if the input is a valid positive integer
+  if (!Number.isInteger(decimal) || decimal < 0) {
+    throw new Error("Input must be a positive integer");
+  }
+
+  // Edge case for 0
+  if (decimal === 0) {
+    return "0";
+  }
+
+  // Initialize an empty string to store the binary representation
+  let binary = "";
+
+  // Keep dividing the decimal number by 2 until it becomes 0
+  while (decimal > 0) {
+    // If the decimal number is odd, add "1" to the binary representation
+    // and subtract 1 to make it even for the next iteration
+    if (decimal % 2 === 1) {
+      binary = "1" + binary;
+      decimal -= 1;
+    }
+    // If the decimal number is even, add "0" to the binary representation
+    else {
+      binary = "0" + binary;
+    }
+    decimal /= 2;
+  }
+
+  // Return the binary representation
+  return binary;
+}
+
 function convertHexToDecimal32(hex) { // returns final IEEE-754 Decimal-32 value
   // convert hex to binary by [hex --> decimal --> binary]
+  // convert hex to decimal
   const decimal = hexToDecimal(hex);
-  
+  // convert decimal to binary
+  const binary = decimalToBinary(decimal);
+
   // since it's binary now, just call convertBinaryToDecimal32(value)
-  return convertBinaryToDecimal32(decimal);
+  return convertBinaryToDecimal32(binary);
 }
 
 function convertBinaryToDecimal32(value) {
