@@ -82,19 +82,19 @@ export default function TestPage() {
     };
   
     const convert = (value) => {
+        // TODO: Make check which case the input is in. HEX --> DEC OR BINARY --> DEC
+        // One way to check is to append 0x if the hex box is the one passed and check for "0x"
+        // Case: Input is HEX
+        console.log("Inputted value:" + parseInt(value, 16))
+        value = parseInt(value, 16)
+        final = convertHexToDecimal32(value)
+        return final
 
-        // Convert the value to a 32-bit float
-        // This is the function that will be used to convert the value
-        // to a 32-bit float.
-        // This function will be called when the user presses the "Convert" button
-        // and the value in the text field is passed in as the parameter "value"
-          // Convert hex string to a 32-bit signed integer using Int32Array
-        const int = new Int32Array([parseInt(value, 16)])[0];
+        // Case: Input is BINARY
+        console.log("CASE BINARY")
+        final = convertBinaryToDecimal32(value)
 
-        // Convert the 32-bit signed integer to a 32-bit floating point decimal using Float32Array
-        const float = new Float32Array([int])[0];
-
-        return float;
+        return final;
 
     };
   
@@ -113,12 +113,51 @@ export default function TestPage() {
     );
 }
 
-function convertToDecimal32(value) {
+function hexToDecimal(hex) {
+  // Define a dictionary to map hexadecimal digits to their decimal values
+  const hexDigits = "0123456789ABCDEF";
+  const hexDict = {};
+  for (let i = 0; i < hexDigits.length; i++) {
+    hexDict[hexDigits[i]] = i;
+  }
+
+  // Convert the hexadecimal string to uppercase for consistency
+  hex = hex.toUpperCase();
+
+  // Initialize the decimal value to 0
+  let decimal = 0;
+
+  // Loop through each character in the hexadecimal string
+  for (let i = 0; i < hex.length; i++) {
+    const digit = hex[i];
+    // Check if the character is a valid hexadecimal digit
+    if (hexDict.hasOwnProperty(digit)) {
+      // Convert the hexadecimal digit to its decimal value and add it to the decimal value
+      decimal = decimal * 16 + hexDict[digit];
+    } else {
+      // If the character is not a valid hexadecimal digit, throw an error
+      throw new Error("Invalid hexadecimal digit: " + digit);
+    }
+  }
+
+  // Return the decimal value
+  return decimal;
+}
+
+function convertHexToDecimal32(hex) { // returns final IEEE-754 Decimal-32 value
+  // convert hex to binary by [hex --> decimal --> binary]
+  const decimal = hexToDecimal(hex);
+  
+  // since it's binary now, just call convertBinaryToDecimal32(value)
+  return convertBinaryToDecimal32(decimal);
+}
+
+function convertBinaryToDecimal32(value) {
     // Convert the value to a 32-bit float
     // This is the function that will be used to convert the value
     // to a 32-bit float.
     // This function will be called when the user presses the "Convert" button
     // and the value in the text field is passed in as the parameter "value"
     
-    console.log("Value: ", value);
+    console.log("Decimal32 value is: ", value);
 }
