@@ -1,8 +1,52 @@
 Follow this algorithm:
-1. split the sign bit which is bit 1 (lets call this part "a"), the exponent and most significant bit combination which is bits 2-6 (lets call this part "b"), the remaining exponent which is bits 7-12 (lets call this part "c"), and the binary-coded decimal of the mantissa which is bits 13-32 (lets call this part "d"). Binary-coded decimal can be calculated by just adding the bit values individually. For example: decimal 8 is binary-coded as 1000, and decimal 7 is binary-coded as 0111.
-2. find the decimal exponent by first finding its first 2 bits. This can be done by first checking the bits of "b". Case 1 is if "b's" first 4 bits are 1s then this is actually a special case and return infinity for the entire algorithm. Case 2 is if all 5 bits of "b" are 1s then this is another special case and return NaN for the entire algorithm. Case 3 is if the first 2 bits of "b" are 1s then the first 2 bits of the exponent is "b's" 3rd and 4th bit respectively. Case 4 is if none of these cases match then the first 2 bits of the exponent is the 1st and 2nd bits of "b".
+[X]
+1. split the sign bit which is bit 1 (lets call this part "a"), 
+
+the exponent and most significant bit combination which is bits 2-6 (lets call this part "b"), 
+
+the remaining exponent which is bits 7-12 (lets call this part "c"), 
+
+and the binary-coded decimal of the mantissa which is bits 13-32 (lets call this part "d"). 
+
+[X]
+2. find the decimal exponent by first finding its first 2 bits. 
+
+This can be done by first checking the bits of "b". 
+
+Case 1 is if "b's" first 4 bits are 1s then this is actually a special case and return infinity for the entire algorithm. 
+
+Case 2 is if all 5 bits of "b" are 1s then this is another special case and return NaN for the entire algorithm. 
+
+Case 3 is if the first 2 bits of "b" are 1s then the first 2 bits of the exponent is "b's" 3rd and 4th bit respectively. 
+
+Case 4 is if none of these cases match then the first 2 bits of the exponent is the 1st and 2nd bits of "b".
+
+[X]
 3. Combine the bits taken from step 2 with the remaining exponent "c".
+
+[X]
 4. convert this binary number to decimal and subtract 101. This is now the 2nd part of the tuple.
-5. Getting the mantissa has two parts: getting the first digit and the remaining digits. Remember the total is 7 decimal digits for the mantissa in the end. To get the first digit, check which case we ended up in step 2. If we were in case 3 then the take the last bit of "b" and convert this to decimal then add 8. If we are in case 4 then take the last 3 digits of "b" and convert this to decimal. This is the first digit of the mantissa.
+
+[X]
+5. Getting the first digit
+
+If we were in case 3 then the take the last bit of "b" and convert this to decimal then add 8. 
+
+If we are in case 4 then take the last 3 digits of "b" and convert this to decimal. This is the first digit of the mantissa.
+
+[X]
 6. To get the remaining digits of the mantissa, we take part "d" and convert to decimal.
-7. finally combine the digit taken from step 5 and step 6. Make the combined number negative depending on the sign bit in part "a". Then return the tuple.
+
+[X]
+7. finally combine the digit taken from step 5 and step 6. Make sure it is 7 digits, pad start with 0. 
+
+[X]
+8. Make the combined number negative depending on the sign bit in part "a". Then return the tuple.
+
+TEST CASES
+
+00100010011010010101111101110101
+(0457675, 1)
+
+11101001101110001000000011100111
+(-8420167, -10)

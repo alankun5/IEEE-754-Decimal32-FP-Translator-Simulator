@@ -306,10 +306,19 @@ function convertBinaryToDecimal32(binary) { // returns final IEEE-754 Decimal-32
 
   // Getting the remaining digits of mantissa
   var remainingDigits = "";
-  for (let i = 0; i < d.length; i += 4) {
-    const bcd = d.slice(i, i + 4);
-    const decimal = convertBCDToDecimal(bcd);
-    remainingDigits = remainingDigits.concat(decimal.toString());
+  var sliceRanges = [
+    [0, 3],
+    [3, 6],
+    [6, 10],
+    [10, 13],
+    [13, 16],
+    [16, 20]
+  ];
+
+  for (var i = 0; i < sliceRanges.length; i++) {
+    var bcd = d.slice(sliceRanges[i][0], sliceRanges[i][1]);
+    var tempDecimal = convertBCDToDecimal(bcd);
+    remainingDigits = remainingDigits.concat(tempDecimal.toString());
   }
 
   // Combining digits for mantissa
