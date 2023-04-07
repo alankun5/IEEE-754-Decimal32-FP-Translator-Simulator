@@ -144,10 +144,10 @@ export default function TestPage() {
           </Grid>
 
           <br></br>
-          {/* 
+          
           <button onClick={handleHexClick}>Convert Hex to Dec32</button>
           <button onClick={handleBinaryClick}>Convert Binary to Dec32</button> 
-          */}
+          
           {result && <h5>Dec 32 Equivalent: {result}</h5>}
           <br></br>
           <button onClick={handleCopyClick}>Copy Result to Clipboard</button>
