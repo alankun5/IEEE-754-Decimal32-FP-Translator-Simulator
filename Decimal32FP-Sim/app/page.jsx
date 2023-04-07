@@ -1,5 +1,5 @@
 "use client"
-import { TextField, Box, Button, Typography, Switch } from '@mui/material';
+import { TextField, Box, Button, Typography, Switch, Container, Grid } from '@mui/material';
 import React from 'react';
 import { useEffect, useState } from 'react';
 import AdbIcon from '@mui/icons-material/Adb';
@@ -8,9 +8,17 @@ export default function TestPage() {
     const [value, setValue] = useState("");
     const [point, togglePoint] = useState(Boolean);
     const [result, setResult] = useState("");
+
+    // For binary input
+    const [sign, setSign] = useState("");
+    const [exponent, setExponent] = useState("");
+    const [mantissa, setMantissa] = useState("");
   
     const handleInputChange = (e) => {
-      setValue(e.target.value);
+      if (e.target.validity.valid)
+        setValue(e.target.value);
+      else
+        return false;
     };
 
     const handleTogglePoint = (prevPoint) => {
@@ -68,26 +76,84 @@ export default function TestPage() {
     };
 
     return (
-      <div>
-        <label htmlFor="text-input">Enter text:</label>
-        <input
-          type="text"
-          id="text-input"
-          value={value}
-          onChange={handleInputChange}
-        />
-        <input type="range" min="0" max="1" step="1" onChange={handleTogglePoint} />
-        <h5>{point ? 'Fixed Point' : 'Floating Point'}</h5>
+      <Box sx={{backgroundColor: 'white', color: 'black'}}>
+        <Container>
+          {/* <label htmlFor="text-input">Enter text:</label> */}
+          {/* <input
+            type="text"
+            id="text-input"
+            value={value}
+            onChange={handleInputChange}
+          /> */}
+          <input type="range" min="0" max="1" step="1" onChange={handleTogglePoint} />
+          <h5>{point ? 'Fixed Point' : 'Floating Point'}</h5>
+          
+          <br></br>
 
-        <br></br>
+          <Grid container>
+            <Grid item xs={12}>
+              <Typography variant='h5'>Hex Input</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <TextField 
+                label='Hexadecimal' 
+                id='hex-input'
+                value={value}
+                onChange={handleInputChange}
+                inputProps= {{ pattern: "[0-9A-Fa-f]*", /*maxLength: 8*/ }}
+                />
+            </Grid>
+            <Grid item xs={12}>
+              <Button onClick={handleHexClick} variant='contained'>Convert Hex to Dec32</Button>
+            </Grid>
+          </Grid>
 
-        <button onClick={handleHexClick}>Convert Hex to Dec32</button>
-        <button onClick={handleBinaryClick}>Convert Binary to Dec32</button>
-        {result && <h5>Dec 32 Equivalent: {result}</h5>}
-        <br></br>
-        <button onClick={handleCopyClick}>Copy Result to Clipboard</button>
-        <button onClick={handleSaveClick}>Save Result as Text File</button>
-      </div>
+          <br></br>
+
+          <Grid container onSubmit={handleBinaryClick}>
+            <Grid item xs={12}>
+              <Typography variant='h5'>Binary Input</Typography>
+            </Grid>
+            <Grid item xs={6}>
+              <TextField 
+                label='Sign' 
+                defaultValue={0}
+                inputProps = {{ pattern: "[01]", maxLength: 1 }}
+                fullWidth
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField 
+                label='Exponent' 
+                defaultValue={'00000000'}
+                inputProps = {{ pattern: "[01]*", maxLength: 8 }}
+                fullWidth
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField 
+                label='Mantissa' 
+                defaultValue={'00000000000000000000000'}
+                inputProps = {{ pattern: "[01]*", maxLength: 23 }}
+                fullWidth
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Button type='submit' variant='contained' onClick={handleBinaryClick}>Convert Binary to Dec32</Button>
+            </Grid>
+          </Grid>
+
+          <br></br>
+          {/* 
+          <button onClick={handleHexClick}>Convert Hex to Dec32</button>
+          <button onClick={handleBinaryClick}>Convert Binary to Dec32</button> 
+          */}
+          {result && <h5>Dec 32 Equivalent: {result}</h5>}
+          <br></br>
+          <button onClick={handleCopyClick}>Copy Result to Clipboard</button>
+          <button onClick={handleSaveClick}>Save Result as Text File</button>
+        </Container>
+      </Box>
     );
 }
 
