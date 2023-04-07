@@ -18,8 +18,7 @@ Simulation Project for CSARCH2
 - MUI: `npm install @mui/icons-material @mui/material @emotion/styled @emotion/react`
 
 **Files & Directories**
-- `/app` : Contains pages & routing here
-    - `/test` : Test page routing for reference (`localhost:3000/test`)
+- `/app` : Contains main page which is the converter
     - `layout.jsx` : Ignore this file but don't remove
     - `/api` : I don't think we need this, we can probably remove unless you want to use APIs
 - `/public` : Place images, icons, and the like inside this folder
