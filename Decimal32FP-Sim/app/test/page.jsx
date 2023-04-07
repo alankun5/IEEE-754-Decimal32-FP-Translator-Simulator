@@ -5,106 +5,68 @@ import { useEffect, useState } from 'react';
 import AdbIcon from '@mui/icons-material/Adb';
 
 export default function TestPage() {
-    /*
-    /* 
-    This is generally how a React useState is used. It takes two parameters:
-        value - the value of the state, in this case it is default to 0
-        setValue - is a function. we use setValue to change the value.
-
-    You can name this whatever you want, but it is generally good practice
-    to call it "variable" and "setVariable"
-    
-    const [value, setValue] = useState(0)
-
-    /* 
-    useEffect takes two parameters, the first is a function and the
-    second is an array of values that it will watch for "changes".
-
-    Basically what useEffect does is it detects "changes" in the application
-    and it runs whatever is inside the function when it detects a change.
-    
-    useEffect(() => {
-        console.log("Value has changed to: ", value);
-    }, [value])
-
-    const handleClick = () => {
-        setValue(value + 1);
-    }
-
-    const handleChange = () => {
-        console.log("Switch has been toggled");
-    }
-
-    const convertToDecimal32 = () => {
-        console.log("tite");
-
-    }
-
-    /*
-    Place things inside the return statement that we want to see rendered
-    in the webpage.
-
-    The green tags here are called components. 
-
-    You can check out other Components you might take an interest in
-    from the Material UI Docs: https://mui.com/material-ui/getting-started/overview/
-    
-    return(
-        <Box
-            sx={{
-                display: "flex-box",
-                backgroundColor: "white",
-                color: "black",
-            }}
-        >
-            <Typography variant='h5'>This is a Test Page</Typography>
-            <h5>normal H5</h5>
-            <p>Value: {value}</p>
-            <Button onClick={ handleClick }>Convert</Button>
-            <TextField id="input" label="I am MUI TextField" placeholder='Type value here...' />
-            {result && <h5>Capitalised text: {result}</h5>}
-
-            <Switch onChange={handleChange} />
-            <AdbIcon />
-        </Box>
-    )
-    */
     const [value, setValue] = useState("");
+    const [point, togglePoint] = useState(Boolean);
     const [result, setResult] = useState("");
   
     const handleInputChange = (e) => {
       setValue(e.target.value);
     };
-  
+
+    const handleTogglePoint = (prevPoint) => {
+      togglePoint(prevPoint => !prevPoint);
+    };
+
     const handleHexClick = () => {
       const convertedDec = convertHex(value); 
+      console.log("Converted Dec: " + convertedDec.toString());
       setResult(convertedDec.toString());
     };
 
     const handleBinaryClick = () => {
       const convertedDec = convertBinary(value); 
+      console.log("Converted Dec: " + convertedDec.toString());
       setResult(convertedDec.toString());
     };
-  
+
+    const handleCopyClick = () => {
+      navigator.clipboard.writeText(result);
+    };
+
+    const handleSaveClick = () => {
+      const blob = new Blob([result], {type: "text/plain;charset=utf-8"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'dec32result.txt';
+      document.body.appendChild(a);
+      a.click();
+      
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 0);
+    };
+    
     const convertHex = (value) => {
         // Case: Input is HEX
         console.log("CASE HEX")
-        console.log("Inputted value:" + value)
+        console.log("Inputted value: " + value)
         // Check if valid input
         if (isValidHex(value))
           return convertHexToDecimal32(value)
-        else return false
+        return "Invalid input."
     };
 
     const convertBinary = (value) => {
       // Case: Input is BINARY
       console.log("CASE BINARY")
-      console.log("Inputted value:" + value)
+      console.log("Inputted value: " + value)
       if(isValidBinary(value))
         return convertBinaryToDecimal32(value)  
-      else return false
+      return "Invalid input."
     };
-  
+
     return (
       <div>
         <label htmlFor="text-input">Enter text:</label>
@@ -114,9 +76,17 @@ export default function TestPage() {
           value={value}
           onChange={handleInputChange}
         />
-        TODO: Have two useEffects, one for hex box input and one for binary box input
-        <button onClick={handleClick}>Convert</button>
+        <input type="range" min="0" max="1" step="1" onChange={handleTogglePoint} />
+        <h5>{point ? 'Fixed Point' : 'Floating Point'}</h5>
+
+        <br></br>
+
+        <button onClick={handleHexClick}>Convert Hex to Dec32</button>
+        <button onClick={handleBinaryClick}>Convert Binary to Dec32</button>
         {result && <h5>Dec 32 Equivalent: {result}</h5>}
+        <br></br>
+        <button onClick={handleCopyClick}>Copy Result to Clipboard</button>
+        <button onClick={handleSaveClick}>Save Result as Text File</button>
       </div>
     );
 }
@@ -225,10 +195,14 @@ function convertBinaryToDecimal32(binary) { // returns final IEEE-754 Decimal-32
     } else {
       return NaN;
     }
-  } else {
-    // Normalized number
-    const mantissa = 1 + parseInt(mantissaBits, 2) / Math.pow(2, 23); // TODO: Do this manually
-    return signBit * mantissa * Math.pow(2, exponent);
   }
+
+  // Normalized number
+  const mantissa = 1 + parseInt(mantissaBits, 2) / Math.pow(2, 23); // TODO: Do this manually
+  console.log("signBit: " + signBit);
+  console.log("mantissa: " + mantissa);
+  console.log("exponent: " + exponent);
+  return signBit * mantissa * Math.pow(2, exponent);
+  
 }
   
