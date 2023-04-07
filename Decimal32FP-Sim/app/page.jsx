@@ -237,38 +237,87 @@ function convertHexToDecimal32(hex) {
   return convertBinaryToDecimal32(binary);
 }
 
+// Param: (Number or String) max 4-bit binary
+// Returns: (String) BCD digit
+function convertBCDToDecimal(bcd) {
+  bcd = (bcd.toString()).padStart(4, "0");
+  bcd = bcd.split('').reverse().join('')
+  var decimal = 0
+  
+  for(let i = 0; i < bcd.length; i++) {
+    if(bcd[i] == 1) {
+    	decimal = decimal + 2**i;
+    }
+  }
+  
+  return decimal;
+}
+
+function convertBinaryToDecimal(binary) {
+  let decimal = 0;
+  const binaryLength = binary.length;
+
+  // Loop through each character in the binary string
+  for (let i = 0; i < binaryLength; i++) {
+    // Check if the character is '1', add the appropriate power of 2 to decimal
+    if (binary[binaryLength - i - 1] === '1') {
+      decimal += Math.pow(2, i);
+    }
+  }
+
+  return decimal;
+}
+
 function convertBinaryToDecimal32(binary) { // returns final IEEE-754 Decimal-32 value
   // IEEE-754 Decimal-32 format requires 32 bits to be valid
   binary = binary.padStart(32, "0");
 
-  // Extract the sign, exponent, and mantissa bits from the binary string
-  const signBit = binary[0] === '1' ? -1 : 1;
-  const exponentBits = binary.slice(1, 9);
-  const mantissaBits = binary.slice(9);
+  // Splitting binary input
+  const a = binary[0]; // Sign bit
+  const b = binary.slice(1, 6); // exponent + MSD
+  const c = binary.slice(6, 12); // Remaining exponent
+  const d = binary.slice(12); // Remaning mantissa in BCD
 
-  // Convert the exponent bits from binary to decimal
-  const exponent = parseInt(exponentBits, 2) - 127; // TODO: DO THIS MANUALLY
+  // Finding decimal exponent
+  let decimalExponent;
+  let firstDigit;
+  if (b === "11111") {
+    // Case 1: Special case - all bits of "b" are 1s
+    return "NaN";
+  } else if (b === "11110") {
+    // Case 2: Special case - first 4 bits of "b" are 1s
+    return "Infinity";
+  } else if (b.startsWith("11")) {
+    // Case 3: First 2 bits of "b" are 1s
+    decimalExponent = b.slice(2, 4); // b's 3rd and 4th bit
 
-  // Handle special cases based on the exponent bits
-  if (exponent === -127) {
-    // Denormalized number (exponent = -127)
-    const mantissa = parseInt(mantissaBits, 2) / Math.pow(2, 23); // TODO: Do this manually
-    return signBit * mantissa * Math.pow(2, -126);
-  } else if (exponent === 128) {
-    // Infinity or NaN (exponent = 128)
-    if (mantissaBits === '00000000000000000000000') {
-      return signBit === 1 ? Infinity : -Infinity;
-    } else {
-      return NaN;
-    }
+    // Get the first digit of the decimal32
+    firstDigit = (convertBCDToDecimal(b % 10) + 8).toString();
+  } else {
+    // Case 4: First 2 bits of "b" are not 1s
+    decimalExponent = b.slice(0, 2); // b's 1st and 2nd bit
+
+    // Get the first digit of the decimal32
+    firstDigit = (convertBCDToDecimal((b.toString()).slice(b.length - 3, b.length))).toString();
   }
 
-  // Normalized number
-  const mantissa = 1 + parseInt(mantissaBits, 2) / Math.pow(2, 23); // TODO: Do this manually
-  console.log("signBit: " + signBit);
-  console.log("mantissa: " + mantissa);
-  console.log("exponent: " + exponent);
-  return signBit * mantissa * Math.pow(2, exponent);
-  
+  // Combining bits for decimal exponent
+  decimalExponent = (convertBinaryToDecimal(decimalExponent.concat(c)) - 101).toString();
+
+  // Getting the remaining digits of mantissa
+  var remainingDigits = "";
+  for (let i = 0; i < d.length; i += 4) {
+    const bcd = d.slice(i, i + 4);
+    const decimal = convertBCDToDecimal(bcd);
+    remainingDigits = remainingDigits.concat(decimal.toString());
+  }
+
+  // Combining digits for mantissa
+  const mantissa = (firstDigit.concat(remainingDigits)).padStart(7, "0");
+
+  // Combining the mantissa and decimal exponent, and making it negative depending on the sign bit
+  const decimal = a === "1" ? -mantissa : mantissa;
+
+  return [decimal, decimalExponent];
 }
   
