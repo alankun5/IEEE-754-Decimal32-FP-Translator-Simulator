@@ -29,7 +29,8 @@ export default function TestPage() {
     const handleHexClick = () => {
       const convertedDec = convertHex(value); 
       console.log("Converted Dec: " + convertedDec.toString());
-      setResult(convertedDec.toString());
+      //setResult(convertedDec.toString());
+      setResult(convertedDec[0] + " x 10^" + convertedDec[1]);
     };
 
     const handleBinaryClick = () => {
@@ -38,7 +39,8 @@ export default function TestPage() {
 
       const convertedDec = convertBinary(value); 
       console.log("Converted Dec: " + convertedDec.toString());
-      setResult(convertedDec.toString());
+      //setResult(convertedDec.toString());
+      setResult(convertedDec[0] + " x 10^" + convertedDec[1]);
     };
 
     const handleCopyClick = () => {
