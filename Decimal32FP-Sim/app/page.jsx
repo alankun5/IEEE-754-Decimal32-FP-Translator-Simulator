@@ -10,9 +10,10 @@ export default function TestPage() {
     const [result, setResult] = useState("");
 
     // For binary input
-    const [sign, setSign] = useState("");
-    const [exponent, setExponent] = useState("");
-    const [mantissa, setMantissa] = useState("");
+    const [sign, setSign] = useState("0");
+    const [combination, setCombination] = useState("00000");
+    const [exponent, setExponent] = useState("000000");
+    const [coefficient, setCoefficient] = useState("00000000000000000000");
   
     const handleInputChange = (e) => {
       if (e.target.validity.valid)
@@ -32,6 +33,9 @@ export default function TestPage() {
     };
 
     const handleBinaryClick = () => {
+      let value = sign + combination + exponent + coefficient;
+      console.log("Binary is " + value)
+
       const convertedDec = convertBinary(value); 
       console.log("Converted Dec: " + convertedDec.toString());
       setResult(convertedDec.toString());
@@ -117,24 +121,36 @@ export default function TestPage() {
             <Grid item xs={6}>
               <TextField 
                 label='Sign' 
-                defaultValue={0}
+                defaultValue={'0'}
                 inputProps = {{ pattern: "[01]", maxLength: 1 }}
+                onChange={e => setSign(e.target.value)}
                 fullWidth
               />
             </Grid>
             <Grid item xs={6}>
               <TextField 
-                label='Exponent' 
-                defaultValue={'00000000'}
-                inputProps = {{ pattern: "[01]*", maxLength: 8 }}
+                label='Combination' 
+                defaultValue={'00000'}
+                inputProps = {{ pattern: "[01]*", maxLength: 5 }}
+                onChange={e => setCombination(e.target.value)}
                 fullWidth
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={6}>
               <TextField 
-                label='Mantissa' 
-                defaultValue={'00000000000000000000000'}
-                inputProps = {{ pattern: "[01]*", maxLength: 23 }}
+                label='Exponent Continuation' 
+                defaultValue={'000000'}
+                inputProps = {{ pattern: "[01]*", maxLength: 6 }}
+                onChange={e => setExponent(e.target.value)}
+                fullWidth
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField 
+                label='Coefficient Continuation' 
+                defaultValue={'00000000000000000000'}
+                inputProps = {{ pattern: "[01]*", maxLength: 20 }}
+                onChange={e => setCoefficient(e.target.value)}
                 fullWidth
               />
             </Grid>
