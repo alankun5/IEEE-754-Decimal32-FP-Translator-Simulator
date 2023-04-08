@@ -29,8 +29,10 @@ export default function TestPage() {
     const handleHexClick = () => {
       const convertedDec = convertHex(value); 
       console.log("Converted Dec: " + convertedDec.toString());
-      //setResult(convertedDec.toString());
-      setResult(convertedDec[0] + " x 10^" + convertedDec[1]);
+      if (convertedDec.toString() === "Invalid input.")
+        alert("Invalid input.");
+      else
+        setResult(convertedDec[0] + " x 10^" + convertedDec[1]);
     };
 
     const handleBinaryClick = () => {
@@ -39,8 +41,10 @@ export default function TestPage() {
 
       const convertedDec = convertBinary(value); 
       console.log("Converted Dec: " + convertedDec.toString());
-      //setResult(convertedDec.toString());
-      setResult(convertedDec[0] + " x 10^" + convertedDec[1]);
+      if (convertedDec.toString() === "Invalid input.")
+        alert("Invalid input.");
+      else
+        setResult(convertedDec[0] + " x 10^" + convertedDec[1]);
     };
 
     const handleCopyClick = () => {
@@ -176,7 +180,7 @@ export default function TestPage() {
 }
 
 function isValidHex(input) {
-  if (/^[0-9A-Fa-f]+$/.test(input.trim()))
+  if (/^[0-9A-Fa-f]+$/.test(input.trim()) && input.length <= 8)
     return true;
   return false;
 }
@@ -188,6 +192,9 @@ function isValidBinary(input) {
 }
 
 function hexToDecimal(hex) {  
+  // Pad 0's to make hex input 8 characters long
+  hex = hex.padStart(8, "0");
+
   // Define a dictionary to map hexadecimal digits to their decimal values
   const hexDigits = "0123456789ABCDEF";
   const hexDict = {};
@@ -197,6 +204,7 @@ function hexToDecimal(hex) {
 
   // Convert the hexadecimal string to uppercase for consistency
   hex = hex.toUpperCase();
+  console.log("Hex value: " + hex);
 
   // Initialize the decimal value to 0
   let decimal = 0;
