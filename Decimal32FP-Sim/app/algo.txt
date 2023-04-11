@@ -45,6 +45,7 @@ If we are in case 4 then take the last 3 digits of "b" and convert this to decim
 
 TEST CASES
 
+0 01000100110 10010101111101110101
 00100010011010010101111101110101
 (0457675, 1)
 
