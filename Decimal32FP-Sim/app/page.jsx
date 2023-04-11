@@ -21,8 +21,11 @@ export default function TestPage() {
     // When Floating Point result is updated, update Fixed Point result as well.
     useEffect(() => {
       /* Perform necessary Calculations */
-      
-      setResultFixed('I am Fixed Point');
+      const convertedDec = convertHex(value); 
+      if (!Number.isNaN(convertedDec)) 
+        setResultFixed((Number(convertedDec[0]) * (Math.pow(10, Number(convertedDec[1])))).toString());
+      else
+        setResultFixed("No output.")
     }, [result])
   
     const handleInputChange = (e) => {
