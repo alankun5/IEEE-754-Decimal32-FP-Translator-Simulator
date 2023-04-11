@@ -24,6 +24,12 @@ export default function TestPage() {
 
     const handleTogglePoint = (prevPoint) => {
       togglePoint(prevPoint => !prevPoint);
+      const convertedDec = convertHex(value); 
+
+      if (!point && !(convertedDec instanceof String))
+          setResult((Number(convertedDec[0]) * (Math.pow(10, Number(convertedDec[1])))).toString());
+        else
+          setResult(convertedDec[0] + " x 10^" + convertedDec[1]);
     };
 
     const handleHexClick = () => {
@@ -32,7 +38,12 @@ export default function TestPage() {
       if (convertedDec.toString() === "Invalid input.")
         alert("Invalid input.");
       else
-        setResult(convertedDec[0] + " x 10^" + convertedDec[1]);
+      {
+        if (point)
+          setResult((Number(convertedDec[0]) * (Math.pow(10, Number(convertedDec[1])))).toString());
+        else
+          setResult(convertedDec[0] + " x 10^" + convertedDec[1]);
+      }
     };
 
     const handleBinaryClick = () => {
@@ -44,7 +55,12 @@ export default function TestPage() {
       if (convertedDec.toString() === "Invalid input.")
         alert("Invalid input.");
       else
-        setResult(convertedDec[0] + " x 10^" + convertedDec[1]);
+      {
+        if (point)
+          setResult((Number(convertedDec[0]) * (Math.pow(10, Number(convertedDec[1])))).toString());
+        else
+          setResult(convertedDec[0] + " x 10^" + convertedDec[1]);
+      }
     };
 
     const handleCopyClick = () => {
