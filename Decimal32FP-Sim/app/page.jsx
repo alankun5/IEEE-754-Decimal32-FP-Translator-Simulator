@@ -22,8 +22,9 @@ export default function TestPage() {
     useEffect(() => {
       /* Perform necessary Calculations */
       const convertedDec = convertHex(value); 
-      if (!Number.isNaN(convertedDec)) 
-        setResultFixed((Number(convertedDec[0]) * (Math.pow(10, Number(convertedDec[1])))).toString());
+      if (!Number.isNaN(convertedDec) && !(convertedDec === "Invalid input.") && !(convertedDec === "Infinity") && !(convertedDec === "-Infinity") && !(convertedDec === "NaN")) {
+        setResultFixed(multiplyExponentToBase(convertedDec[0], convertedDec[1]));
+      }
       else
         setResultFixed("No output.")
     }, [result])
@@ -37,12 +38,6 @@ export default function TestPage() {
 
     const handleTogglePoint = (prevPoint) => {
       togglePoint(prevPoint => !prevPoint);
-      const convertedDec = convertHex(value); 
-
-      if (!point && !(convertedDec instanceof String))
-          setResult((Number(convertedDec[0]) * (Math.pow(10, Number(convertedDec[1])))).toString());
-        else
-          setResult(convertedDec[0] + " x 10^" + convertedDec[1]);
     };
 
     const handleHexClick = () => {
@@ -254,6 +249,27 @@ export default function TestPage() {
         </Container>
       </Box>
     );
+}
+
+function multiplyExponentToBase(mantissa, exponent) {
+  // Convert mantissa to BigInt
+  const bigintMantissa = BigInt(mantissa);
+
+  // Calculate 10 raised to the power of exponent as BigInt
+  const bigintBase = BigInt(10);
+  if (exponent < 0) {
+    exponent = -exponent;
+    const bigintResult = bigintMantissa / (bigintBase ** BigInt(exponent));
+    return bigintResult.toString();
+  } else {
+    const bigintExponent = BigInt(exponent);
+    const bigintTenRaisedToExponent = bigintBase ** bigintExponent;
+    // Multiply mantissa by 10 raised to the power of exponent
+    const bigintResult = bigintMantissa * bigintTenRaisedToExponent;
+
+    // Convert the result to a string and return it
+    return bigintResult.toString();
+  }
 }
 
 function isValidHex(input) {
