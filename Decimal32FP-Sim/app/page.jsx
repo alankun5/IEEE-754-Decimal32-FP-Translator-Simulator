@@ -1,19 +1,29 @@
 "use client"
-import { TextField, Box, Button, Typography, Switch, Container, Grid } from '@mui/material';
+import { TextField, Box, Button, Typography, Switch, Container, Grid, Slider } from '@mui/material';
 import React from 'react';
 import { useEffect, useState } from 'react';
-import AdbIcon from '@mui/icons-material/Adb';
 
 export default function TestPage() {
+    const [point, togglePoint] = useState(false); // false: Floating Point, true: Fixed Point
+    const [result, setResult] = useState(""); // Floating Point
+    // experimental
+    const [resultFixed, setResultFixed] = useState(""); // Fixed Point
+
+    // For hex input
     const [value, setValue] = useState("");
-    const [point, togglePoint] = useState(Boolean);
-    const [result, setResult] = useState("");
 
     // For binary input
     const [sign, setSign] = useState("0");
     const [combination, setCombination] = useState("00000");
     const [exponent, setExponent] = useState("000000");
     const [coefficient, setCoefficient] = useState("00000000000000000000");
+
+    // When Floating Point result is updated, update Fixed Point result as well.
+    useEffect(() => {
+      /* Perform necessary Calculations */
+      
+      setResultFixed('I am Fixed Point');
+    }, [result])
   
     const handleInputChange = (e) => {
       if (e.target.validity.valid)
@@ -87,91 +97,133 @@ export default function TestPage() {
 
     return (
       <Box sx={{backgroundColor: 'white', color: 'black'}}>
-        <Container>
-          {/* <label htmlFor="text-input">Enter text:</label> */}
-          {/* <input
-            type="text"
-            id="text-input"
-            value={value}
-            onChange={handleInputChange}
-          /> */}
-          <input type="range" min="0" max="1" step="1" onChange={handleTogglePoint} />
+        <Container
+          sx={{
+            backgroundColor: 'lightblue',
+          }}
+        >
+          {/* <input type="range" min="0" max="1" step="1" onChange={handleTogglePoint} /> */}
+          <Switch 
+            checked={point}
+            onChange={handleTogglePoint}
+          />
+
           <h5>{point ? 'Fixed Point' : 'Floating Point'}</h5>
           
           <br></br>
 
-          <Grid container>
-            <Grid item xs={12}>
-              <Typography variant='h5'>Hex Input</Typography>
+          {/* Container for inputs */}
+          <div
+            style={{
+              backgroundColor: 'pink',
+              width: 500,
+            }}
+          >
+            <Grid container 
+              sx={{
+                bgcolor: 'pink',
+              }}
+            >
+              <Grid item xs={12}>
+                <Typography variant='h5'>Hex Input</Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <TextField 
+                  label='Hexadecimal' 
+                  id='hex-input'
+                  value={value}
+                  onChange={handleInputChange}
+                  inputProps= {{ pattern: "[0-9A-Fa-f]*", /*maxLength: 8*/ }}
+                  />
+              </Grid>
+              <Grid item xs={12}>
+                <Button onClick={handleHexClick} variant='contained'>Convert Hex to Dec32</Button>
+              </Grid>
             </Grid>
-            <Grid item xs={12}>
-              <TextField 
-                label='Hexadecimal' 
-                id='hex-input'
-                value={value}
-                onChange={handleInputChange}
-                inputProps= {{ pattern: "[0-9A-Fa-f]*", /*maxLength: 8*/ }}
+
+            <br></br>
+
+            <Grid container>
+              <Grid item xs={12}>
+                <Typography variant='h5'>
+                  Binary Input
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <TextField 
+                  label='Sign' 
+                  defaultValue={'0'}
+                  inputProps = {{ pattern: "[01]", maxLength: 1 }}
+                  onChange={e => setSign(e.target.value)}
+                  fullWidth
                 />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField 
+                  label='Combination' 
+                  defaultValue={'00000'}
+                  inputProps = {{ pattern: "[01]*", maxLength: 5 }}
+                  onChange={e => setCombination(e.target.value)}
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField 
+                  label='Exponent Continuation' 
+                  defaultValue={'000000'}
+                  inputProps = {{ pattern: "[01]*", maxLength: 6 }}
+                  onChange={e => setExponent(e.target.value)}
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField 
+                  label='Coefficient Continuation' 
+                  defaultValue={'00000000000000000000'}
+                  inputProps = {{ pattern: "[01]*", maxLength: 20 }}
+                  onChange={e => setCoefficient(e.target.value)}
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Button 
+                  type='submit' 
+                  variant='contained' 
+                  onClick={handleBinaryClick}
+                >
+                  Convert Binary to Dec32
+                </Button>
+              </Grid>
             </Grid>
-            <Grid item xs={12}>
-              <Button onClick={handleHexClick} variant='contained'>Convert Hex to Dec32</Button>
-            </Grid>
-          </Grid>
-
-          <br></br>
-
-          <Grid container onSubmit={handleBinaryClick}>
-            <Grid item xs={12}>
-              <Typography variant='h5'>Binary Input</Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <TextField 
-                label='Sign' 
-                defaultValue={'0'}
-                inputProps = {{ pattern: "[01]", maxLength: 1 }}
-                onChange={e => setSign(e.target.value)}
-                fullWidth
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField 
-                label='Combination' 
-                defaultValue={'00000'}
-                inputProps = {{ pattern: "[01]*", maxLength: 5 }}
-                onChange={e => setCombination(e.target.value)}
-                fullWidth
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField 
-                label='Exponent Continuation' 
-                defaultValue={'000000'}
-                inputProps = {{ pattern: "[01]*", maxLength: 6 }}
-                onChange={e => setExponent(e.target.value)}
-                fullWidth
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField 
-                label='Coefficient Continuation' 
-                defaultValue={'00000000000000000000'}
-                inputProps = {{ pattern: "[01]*", maxLength: 20 }}
-                onChange={e => setCoefficient(e.target.value)}
-                fullWidth
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <Button type='submit' variant='contained' onClick={handleBinaryClick}>Convert Binary to Dec32</Button>
-            </Grid>
-          </Grid>
+          </div>
+          
+          {/* Container for results */}
+          <div
+            style={{
+              backgroundColor: 'orange',
+              display: 'inline-block',
+              width: 500,
+              height: 250,
+            }}
+          >
+            <Typography variant='h5'>Result</Typography>
+            {/* {result && <h5>Dec 32 Equivalent: {result}</h5>} */}
+            {
+              (result && point) ? 
+                <Typography>{resultFixed}</Typography>
+              : (result && !point) ?
+                <Typography>{result}</Typography>
+              : <Typography>No output.</Typography>
+            }
+          </div>
 
           <br></br>
           
           <button onClick={handleHexClick}>Convert Hex to Dec32</button>
           <button onClick={handleBinaryClick}>Convert Binary to Dec32</button> 
-          
-          {result && <h5>Dec 32 Equivalent: {result}</h5>}
+        
           <br></br>
+
           <button onClick={handleCopyClick}>Copy Result to Clipboard</button>
           <button onClick={handleSaveClick}>Save Result as Text File</button>
         </Container>
