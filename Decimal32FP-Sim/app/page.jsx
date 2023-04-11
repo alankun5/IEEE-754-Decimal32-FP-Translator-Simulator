@@ -50,6 +50,9 @@ export default function TestPage() {
       console.log("Converted Dec: " + convertedDec.toString());
       if (convertedDec.toString() === "Invalid input.")
         alert("Invalid input.");
+      else if (convertedDec.toString() === "Infinity" || convertedDec.toString() === "-Infinity" || convertedDec.toString() === "NaN") {
+        setResult(convertedDec.toString());
+      }
       else
       {
         if (point)
@@ -67,6 +70,9 @@ export default function TestPage() {
       console.log("Converted Dec: " + convertedDec.toString());
       if (convertedDec.toString() === "Invalid input.")
         alert("Invalid input.");
+      else if (convertedDec.toString() === "Infinity" || convertedDec.toString() === "-Infinity" || convertedDec.toString() === "NaN") {
+        setResult(convertedDec.toString());
+      }
       else
       {
         if (point)
@@ -383,7 +389,7 @@ function convertBinaryToDecimal32(binary) { // returns final IEEE-754 Decimal-32
     return "NaN";
   } else if (b === "11110") {
     // Case 2: Special case - first 4 bits of "b" are 1s
-    return "Infinity";
+    return a === "1" ? "-Infinity" : "Infinity";
   } else if (b.startsWith("11")) {
     // Case 3: First 2 bits of "b" are 1s
     decimalExponent = b.slice(2, 4); // b's 3rd and 4th bit
