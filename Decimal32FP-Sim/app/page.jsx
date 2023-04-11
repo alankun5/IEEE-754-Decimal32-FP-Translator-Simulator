@@ -419,7 +419,12 @@ function convertBinaryToDecimal32(binary) { // returns final IEEE-754 Decimal-32
   }
 
   // Combining digits for mantissa
-  const mantissa = (firstDigit.concat(remainingDigits)).padStart(7, "0");
+  var mantissa;
+  if (firstDigit === "0") {
+    mantissa = remainingDigits
+  } else {
+    mantissa = firstDigit.concat(remainingDigits);
+  }
 
   // Combining the mantissa and decimal exponent, and making it negative depending on the sign bit
   const decimal = a === "1" ? -mantissa : mantissa;
