@@ -3,6 +3,13 @@ import { TextField, Box, Button, Typography, Switch, Container, Grid, Slider } f
 import React from 'react';
 import { useEffect, useState } from 'react';
 
+const specialCases = [
+  "Invalid Input",
+  "Infinity",
+  "NaN",
+  "-Infinity"
+]
+
 export default function TestPage() {
     const [point, togglePoint] = useState(false); // false: Floating Point, true: Fixed Point
     const [result, setResult] = useState(""); // Floating Point
@@ -21,13 +28,21 @@ export default function TestPage() {
     // When Floating Point result is updated, update Fixed Point result as well.
     useEffect(() => {
       /* Perform necessary Calculations */
-      const convertedDec = convertHex(value); 
-      if (!Number.isNaN(convertedDec) && !(convertedDec === "Invalid input.") && !(convertedDec === "Infinity") && !(convertedDec === "-Infinity") && !(convertedDec === "NaN")) 
-        setResultFixed((Number(convertedDec[0]) * (Math.pow(10, Number(convertedDec[1])))).toString());
-      else if (convertedDec === "Invalid input." || convertedDec === "Infinity" || convertedDec === "-Infinity" || convertedDec === "NaN")
-        setResultFixed(convertedDec);
+      // const convertedDec = convertHex(value);
+      // if (!Number.isNaN(convertedDec) && !(convertedDec === "Invalid input.") && !(convertedDec === "Infinity") && !(convertedDec === "-Infinity") && !(convertedDec === "NaN")) 
+      //   setResultFixed((Number(convertedDec[0]) * (Math.pow(10, Number(convertedDec[1])))).toString());
+      // else if (convertedDec === "Invalid input." || convertedDec === "Infinity" || convertedDec === "-Infinity" || convertedDec === "NaN") 
+      //   setResultFixed(convertedDec);
+      // else
+      //   setResultFixed("No output.")
+
+      console.log("debug_result: ", result);
+      if (!Number.isNaN(result) && !(specialCases.includes(result))) 
+        setResultFixed((Number(result[0]) * (Math.pow(10, Number(result[1])))).toString());
+      else if (specialCases.includes(result)) 
+        setResultFixed(result);
       else
-        setResultFixed("No output.")
+        setResultFixed("No output.");
     }, [result])
   
     const handleInputChange = (e) => {
@@ -39,14 +54,14 @@ export default function TestPage() {
 
     const handleTogglePoint = (prevPoint) => {
       togglePoint(prevPoint => !prevPoint);
-      const convertedDec = convertHex(value); 
+      // const convertedDec = convertHex(value); 
 
-      if (!point && !(convertedDec instanceof String))
-        setResult((Number(convertedDec[0]) * (Math.pow(10, Number(convertedDec[1])))).toString());
-      else if (convertedDec === "Invalid input." || convertedDec === "Infinity" || convertedDec === "-Infinity" || convertedDec === "NaN")
-        setResult(convertedDec);
-      else
-        setResult(convertedDec[0] + " x 10^" + convertedDec[1]);
+      // if (!point && !(convertedDec instanceof String))
+      //   setResult((Number(convertedDec[0]) * (Math.pow(10, Number(convertedDec[1])))).toString());
+      // else if (convertedDec === "Invalid input." || convertedDec === "Infinity" || convertedDec === "-Infinity" || convertedDec === "NaN")
+      //   setResult(convertedDec);
+      // else
+      //   setResult(convertedDec[0] + " x 10^" + convertedDec[1]);
     };
 
     const handleHexClick = () => {
