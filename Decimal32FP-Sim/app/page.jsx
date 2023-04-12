@@ -4,7 +4,6 @@ import React from 'react';
 import { useEffect, useState } from 'react';
 
 const specialCases = [
-  "Invalid Input",
   "Infinity",
   "NaN",
   "-Infinity"
@@ -36,10 +35,10 @@ export default function TestPage() {
       // else
       //   setResultFixed("No output.")
 
-      console.log("debug_result: ", result);
+      //console.log("debug_result: ", result[0]);
       if (!Number.isNaN(result) && !(specialCases.includes(result))) 
         setResultFixed((Number(result[0]) * (Math.pow(10, Number(result[1])))).toString());
-      else if (specialCases.includes(result)) 
+      else if (specialCases.includes(result) || result === "Invalid input.") 
         setResultFixed(result);
       else
         setResultFixed("No output.");
@@ -74,30 +73,34 @@ export default function TestPage() {
       }
       else
       {
-        if (point)
-          setResult((Number(convertedDec[0]) * (Math.pow(10, Number(convertedDec[1])))).toString());
-        else
-          setResult(convertedDec[0] + " x 10^" + convertedDec[1]);
+        // if (point)
+        //   setResult((Number(convertedDec[0]) * (Math.pow(10, Number(convertedDec[1])))).toString());
+        // else
+        //   setResult(convertedDec[0] + " x 10^" + convertedDec[1]);
+        setResult(convertedDec[0] + " x 10^" + convertedDec[1]);
+        setResultFixed((Number(convertedDec[0]) * (Math.pow(10, Number(convertedDec[1])))).toString());
       }
     };
 
     const handleBinaryClick = () => {
       let value = sign + combination + exponent + coefficient;
-      console.log("Binary is " + value)
+      console.log("handleBinaryClick: " + value)
 
-      const convertedDec = convertBinary(value); 
-      console.log("Converted Dec: " + convertedDec.toString());
-      if (convertedDec.toString() === "Invalid input.")
+      const convertedDec = convertBinary(value);
+
+      console.log("convertedDecimal: " + convertedDec.toString());
+
+      if (convertedDec.toString() === "Invalid input.") {
         alert("Invalid input.");
-      else if (convertedDec.toString() === "Infinity" || convertedDec.toString() === "-Infinity" || convertedDec.toString() === "NaN") {
+      }
+      else if (specialCases.includes(convertedDec.toString())) {
         setResult(convertedDec.toString());
+        setResultFixed(convertedDec.toString());
       }
       else
       {
-        if (point)
-          setResult((Number(convertedDec[0]) * (Math.pow(10, Number(convertedDec[1])))).toString());
-        else
-          setResult(convertedDec[0] + " x 10^" + convertedDec[1]);
+        setResult(convertedDec[0] + " x 10^" + convertedDec[1]);
+        setResultFixed((Number(convertedDec[0]) * (Math.pow(10, Number(convertedDec[1])))).toString());
       }
     };
 
@@ -132,8 +135,8 @@ export default function TestPage() {
 
     const convertBinary = (value) => {
       // Case: Input is BINARY
-      console.log("CASE BINARY")
-      console.log("Inputted value: " + value)
+      //console.log("CASE BINARY")
+      //console.log("Inputted value: " + value)
       if(isValidBinary(value))
         return convertBinaryToDecimal32(value)  
       return "Invalid input."
@@ -146,16 +149,6 @@ export default function TestPage() {
             backgroundColor: 'lightblue',
           }}
         >
-          {/* <input type="range" min="0" max="1" step="1" onChange={handleTogglePoint} /> */}
-          <Switch 
-            checked={point}
-            onChange={handleTogglePoint}
-          />
-
-          <h5>{point ? 'Fixed Point' : 'Floating Point'}</h5>
-          
-          <br></br>
-
           {/* Container for inputs */}
           <div
             style={{
@@ -240,6 +233,14 @@ export default function TestPage() {
               </Grid>
             </Grid>
           </div>
+
+          {/* Result Toggle Filter */}
+          {/* <input type="range" min="0" max="1" step="1" onChange={handleTogglePoint} /> */}
+          <Switch 
+            checked={point}
+            onChange={handleTogglePoint}
+          />
+          <h5>{point ? 'Fixed Point' : 'Floating Point'}</h5>
           
           {/* Container for results */}
           <div
@@ -395,36 +396,41 @@ function convertBinaryToDecimal32(binary) { // returns final IEEE-754 Decimal-32
   binary = binary.padStart(32, "0");
 
   // Splitting binary input
-  const a = binary[0]; // Sign bit
-  const b = binary.slice(1, 6); // exponent + MSD
-  const c = binary.slice(6, 12); // Remaining exponent
-  const d = binary.slice(12); // Remaning mantissa in BCD
+  const signBit = binary[0]; // Sign bit
+  const combinationBits = binary.slice(1, 6); // exponent + MSD
+  const exponentBits = binary.slice(6, 12); // Remaining exponent
+  const coefficientBits = binary.slice(12); // Remaning mantissa in Packed BCD
+
+  console.log('signBit: ' + signBit);
+  console.log('combinationBits: ' + combinationBits);
+  console.log('exponentBits: ' + exponentBits);
+  console.log('coefficientBits: ' + coefficientBits);
 
   // Finding decimal exponent
   let decimalExponent;
   let firstDigit;
-  if (b === "11111") {
+  if (combinationBits === "11111") {
     // Case 1: Special case - all bits of "b" are 1s
     return "NaN";
-  } else if (b === "11110") {
+  } else if (combinationBits === "11110") {
     // Case 2: Special case - first 4 bits of "b" are 1s
-    return a === "1" ? "-Infinity" : "Infinity";
-  } else if (b.startsWith("11")) {
+    return signBit === "1" ? "-Infinity" : "Infinity";
+  } else if (combinationBits.startsWith("11")) {
     // Case 3: First 2 bits of "b" are 1s
-    decimalExponent = b.slice(2, 4); // b's 3rd and 4th bit
+    decimalExponent = combinationBits.slice(2, 4); // b's 3rd and 4th bit
 
     // Get the first digit of the decimal32
-    firstDigit = (convertBCDToDecimal(b % 10) + 8).toString();
+    firstDigit = (convertBCDToDecimal(combinationBits % 10) + 8).toString();
   } else {
     // Case 4: First 2 bits of "b" are not 1s
-    decimalExponent = b.slice(0, 2); // b's 1st and 2nd bit
+    decimalExponent = combinationBits.slice(0, 2); // b's 1st and 2nd bit
 
     // Get the first digit of the decimal32
-    firstDigit = (convertBCDToDecimal((b.toString()).slice(b.length - 3, b.length))).toString();
+    firstDigit = (convertBCDToDecimal((combinationBits.toString()).slice(combinationBits.length - 3, combinationBits.length))).toString();
   }
 
   // Combining bits for decimal exponent
-  decimalExponent = (convertBinaryToDecimal(decimalExponent.concat(c)) - 101).toString();
+  decimalExponent = (convertBinaryToDecimal(decimalExponent.concat(exponentBits)) - 101).toString();
 
   // Getting the remaining digits of mantissa
   var remainingDigits = "";
@@ -438,7 +444,7 @@ function convertBinaryToDecimal32(binary) { // returns final IEEE-754 Decimal-32
   ];
 
   for (var i = 0; i < sliceRanges.length; i++) {
-    var bcd = d.slice(sliceRanges[i][0], sliceRanges[i][1]);
+    var bcd = coefficientBits.slice(sliceRanges[i][0], sliceRanges[i][1]);
     var tempDecimal = convertBCDToDecimal(bcd);
     remainingDigits = remainingDigits.concat(tempDecimal.toString());
   }
@@ -451,9 +457,13 @@ function convertBinaryToDecimal32(binary) { // returns final IEEE-754 Decimal-32
     mantissa = firstDigit.concat(remainingDigits);
   }
 
-  // Combining the mantissa and decimal exponent, and making it negative depending on the sign bit
-  const decimal = a === "1" ? -mantissa : mantissa;
+  console.log('mantissa: ' + mantissa);
 
-  return [decimal, decimalExponent];
+  // Combining the mantissa and decimal exponent, and making it negative depending on the sign bit
+  const decimal = signBit === "1" ? -mantissa : mantissa;
+
+  console.log('decimal: ' + decimal);
+
+  return [decimal.toString().padStart(7, '0'), decimalExponent];
 }
   
