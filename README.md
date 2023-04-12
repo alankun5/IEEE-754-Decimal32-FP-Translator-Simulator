@@ -1,6 +1,9 @@
 # IEEE-754-Decimal32-FP-Translator-Simulator
 Simulation Project for CSARCH2
 
+## Test Cases
+https://docs.google.com/spreadsheets/d/11BLRBZ9CFI4jy7rsdIdkARfUHGlyo-LTIqGbxjphxb4/edit?usp=sharing
+
 ---
 ## Dev Notes
 
