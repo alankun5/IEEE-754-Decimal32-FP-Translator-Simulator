@@ -69,11 +69,17 @@ export default function TestPage() {
     };
 
     const handleCopyClick = () => {
-      navigator.clipboard.writeText(result);
+      if (point)
+        navigator.clipboard.writeText(resultFixed);
+      else
+        navigator.clipboard.writeText(result);
     };
 
     const handleSaveClick = () => {
-      const blob = new Blob([result], {type: "text/plain;charset=utf-8"});
+      if (point)
+        var blob = new Blob([resultFixed], {type: "text/plain;charset=utf-8"});
+      else
+        var blob = new Blob([result], {type: "text/plain;charset=utf-8"});
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
