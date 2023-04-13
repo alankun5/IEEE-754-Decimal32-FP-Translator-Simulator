@@ -23,16 +23,6 @@ export default function TestPage() {
     const [combination, setCombination] = useState("");
     const [exponent, setExponent] = useState("");
     const [coefficient, setCoefficient] = useState("");
-
-    // When Floating Point result is updated, update Fixed Point result as well.
-    useEffect(() => {
-      if (!Number.isNaN(result) && !(specialCases.includes(result))) 
-        setResultFixed(toFixedPoint(result));
-      else if (specialCases.includes(result) || result === "Invalid input.") 
-        setResultFixed(result);
-      else
-        setResultFixed("No output.");
-    }, [result])
   
     const handleInputChange = (e) => {
       if (e.target.validity.valid)
@@ -47,11 +37,11 @@ export default function TestPage() {
 
     const handleHexClick = () => {
       const convertedDec = convertHex(value); 
-      console.log("Converted Dec: " + convertedDec.toString());
       if (convertedDec.toString() === "Invalid input.")
         alert("Invalid input.");
-      else if (convertedDec.toString() === "Infinity" || convertedDec.toString() === "-Infinity" || convertedDec.toString() === "NaN") {
+      else if (specialCases.includes(convertedDec.toString())) {
         setResult(convertedDec.toString());
+        setResultFixed(convertedDec.toString());
       }
       else
       {
@@ -62,11 +52,7 @@ export default function TestPage() {
 
     const handleBinaryClick = () => {
       let value = sign + combination + exponent + coefficient;
-      console.log("handleBinaryClick: " + value)
-
       const convertedDec = convertBinary(value);
-
-      console.log("convertedDecimal: " + convertedDec.toString());
 
       if (convertedDec.toString() === "Invalid input.") {
         alert("Invalid input.");
@@ -103,8 +89,6 @@ export default function TestPage() {
     
     const convertHex = (value) => {
         // Case: Input is HEX
-        console.log("CASE HEX")
-        console.log("Inputted value: " + value)
         // Check if valid input
         if (isValidHex(value))
           return convertHexToDecimal32(value)
@@ -113,8 +97,6 @@ export default function TestPage() {
 
     const convertBinary = (value) => {
       // Case: Input is BINARY
-      //console.log("CASE BINARY")
-      //console.log("Inputted value: " + value)
       if(isValidBinary(value))
         return convertBinaryToDecimal32(value)  
       return "Invalid input."
