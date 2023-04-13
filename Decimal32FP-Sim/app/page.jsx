@@ -19,25 +19,15 @@ export default function TestPage() {
     const [value, setValue] = useState("");
 
     // For binary input
-    const [sign, setSign] = useState("0");
-    const [combination, setCombination] = useState("00000");
-    const [exponent, setExponent] = useState("000000");
-    const [coefficient, setCoefficient] = useState("00000000000000000000");
+    const [sign, setSign] = useState("");
+    const [combination, setCombination] = useState("");
+    const [exponent, setExponent] = useState("");
+    const [coefficient, setCoefficient] = useState("");
 
     // When Floating Point result is updated, update Fixed Point result as well.
     useEffect(() => {
-      /* Perform necessary Calculations */
-      // const convertedDec = convertHex(value);
-      // if (!Number.isNaN(convertedDec) && !(convertedDec === "Invalid input.") && !(convertedDec === "Infinity") && !(convertedDec === "-Infinity") && !(convertedDec === "NaN")) 
-      //   setResultFixed((Number(convertedDec[0]) * (Math.pow(10, Number(convertedDec[1])))).toString());
-      // else if (convertedDec === "Invalid input." || convertedDec === "Infinity" || convertedDec === "-Infinity" || convertedDec === "NaN") 
-      //   setResultFixed(convertedDec);
-      // else
-      //   setResultFixed("No output.")
-
-      //console.log("debug_result: ", result[0]);
       if (!Number.isNaN(result) && !(specialCases.includes(result))) 
-        setResultFixed((Number(result[0]) * (Math.pow(10, Number(result[1])))).toString());
+        setResultFixed(toFixedPoint(result));
       else if (specialCases.includes(result) || result === "Invalid input.") 
         setResultFixed(result);
       else
@@ -53,14 +43,6 @@ export default function TestPage() {
 
     const handleTogglePoint = (prevPoint) => {
       togglePoint(prevPoint => !prevPoint);
-      // const convertedDec = convertHex(value); 
-
-      // if (!point && !(convertedDec instanceof String))
-      //   setResult((Number(convertedDec[0]) * (Math.pow(10, Number(convertedDec[1])))).toString());
-      // else if (convertedDec === "Invalid input." || convertedDec === "Infinity" || convertedDec === "-Infinity" || convertedDec === "NaN")
-      //   setResult(convertedDec);
-      // else
-      //   setResult(convertedDec[0] + " x 10^" + convertedDec[1]);
     };
 
     const handleHexClick = () => {
@@ -73,12 +55,8 @@ export default function TestPage() {
       }
       else
       {
-        // if (point)
-        //   setResult((Number(convertedDec[0]) * (Math.pow(10, Number(convertedDec[1])))).toString());
-        // else
-        //   setResult(convertedDec[0] + " x 10^" + convertedDec[1]);
         setResult(convertedDec[0] + " x 10^" + convertedDec[1]);
-        setResultFixed((Number(convertedDec[0]) * (Math.pow(10, Number(convertedDec[1])))).toString());
+        setResultFixed(toFixedPoint(convertedDec));
       }
     };
 
@@ -100,7 +78,7 @@ export default function TestPage() {
       else
       {
         setResult(convertedDec[0] + " x 10^" + convertedDec[1]);
-        setResultFixed((Number(convertedDec[0]) * (Math.pow(10, Number(convertedDec[1])))).toString());
+        setResultFixed(toFixedPoint(convertedDec));
       }
     };
 
@@ -146,19 +124,16 @@ export default function TestPage() {
       <Box sx={{backgroundColor: 'white', color: 'black'}}>
         <Container
           sx={{
-            backgroundColor: 'lightblue',
           }}
         >
           {/* Container for inputs */}
           <div
             style={{
-              backgroundColor: 'pink',
               width: 500,
             }}
           >
             <Grid container 
               sx={{
-                bgcolor: 'pink',
               }}
             >
               <Grid item xs={12}>
@@ -189,7 +164,7 @@ export default function TestPage() {
               <Grid item xs={6}>
                 <TextField 
                   label='Sign' 
-                  defaultValue={'0'}
+                  defaultValue={''}
                   inputProps = {{ pattern: "[01]", maxLength: 1 }}
                   onChange={e => setSign(e.target.value)}
                   fullWidth
@@ -198,7 +173,7 @@ export default function TestPage() {
               <Grid item xs={6}>
                 <TextField 
                   label='Combination' 
-                  defaultValue={'00000'}
+                  defaultValue={''}
                   inputProps = {{ pattern: "[01]*", maxLength: 5 }}
                   onChange={e => setCombination(e.target.value)}
                   fullWidth
@@ -207,7 +182,7 @@ export default function TestPage() {
               <Grid item xs={6}>
                 <TextField 
                   label='Exponent Continuation' 
-                  defaultValue={'000000'}
+                  defaultValue={''}
                   inputProps = {{ pattern: "[01]*", maxLength: 6 }}
                   onChange={e => setExponent(e.target.value)}
                   fullWidth
@@ -216,7 +191,7 @@ export default function TestPage() {
               <Grid item xs={6}>
                 <TextField 
                   label='Coefficient Continuation' 
-                  defaultValue={'00000000000000000000'}
+                  defaultValue={''}
                   inputProps = {{ pattern: "[01]*", maxLength: 20 }}
                   onChange={e => setCoefficient(e.target.value)}
                   fullWidth
@@ -245,7 +220,6 @@ export default function TestPage() {
           {/* Container for results */}
           <div
             style={{
-              backgroundColor: 'orange',
               display: 'inline-block',
               width: 500,
               height: 250,
@@ -261,19 +235,61 @@ export default function TestPage() {
               : <Typography>No output.</Typography>
             }
           </div>
-
+          <br/>
+          <Grid item xs={12}>
+            <Button onClick={handleCopyClick} variant='contained'>Copy Result to Clipboard</Button>
+          </Grid>
           <br></br>
-          
-          <button onClick={handleHexClick}>Convert Hex to Dec32</button>
-          <button onClick={handleBinaryClick}>Convert Binary to Dec32</button> 
-        
+          <Grid item xs={12}>
+            <Button onClick={handleSaveClick} variant='contained'>Save Result as Text File</Button>
+          </Grid>
           <br></br>
-
-          <button onClick={handleCopyClick}>Copy Result to Clipboard</button>
-          <button onClick={handleSaveClick}>Save Result as Text File</button>
         </Container>
       </Box>
     );
+}
+
+// Returns a string as the number where the decimal is moved to the right by the exponent
+function toFixedPoint(value) { // value is an array [number with no decimal point, exponent]
+  let decimal = value[0];
+  let exponent = value[1];
+  // move to the left if exponent is negative
+  if (exponent < 0) {
+    // if initial number is negative, remove the negative then add back later
+    let negative = false;
+    if (decimal[0] === "-") {
+      negative = true;
+      decimal = decimal.substring(1);
+    }
+    let decimalLength = decimal.length;
+    
+    // add 0s to the left of the decimal (exponent length - initial number length) times
+    if (Math.abs(exponent) >= decimalLength) {
+      for (let i = 0; i < Math.abs(exponent) - decimalLength; i++) {
+        decimal = "0" + decimal;
+      }
+      decimal = "0." + decimal;
+    }
+
+    if (Math.abs(exponent) < decimalLength) {
+      // put a decimal point on the decimal.length - Math.abs(exponent) position of the initial number
+      decimal = decimal.substring(0, decimalLength - Math.abs(exponent)) + "." + decimal.substring(decimal.length - Math.abs(exponent));
+    }
+    
+    
+    // add back negative sign
+    if (negative)
+      decimal = "-" + decimal;
+  }
+
+  // move to the right if exponent is positive
+  if (exponent > 0) {
+    for (let i = 0; i < exponent; i++) {
+      decimal = decimal + "0";
+    }
+  }
+
+  return decimal;
 }
 
 function isValidHex(input) {
@@ -464,6 +480,6 @@ function convertBinaryToDecimal32(binary) { // returns final IEEE-754 Decimal-32
 
   console.log('decimal: ' + decimal);
 
-  return [decimal.toString().padStart(7, '0'), decimalExponent];
+  return [decimal.toString(), decimalExponent];
 }
   
