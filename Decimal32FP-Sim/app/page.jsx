@@ -275,13 +275,13 @@ function toFixedPoint(value) { // value is an array [number with no decimal poin
 }
 
 function isValidHex(input) {
-  if (/^[0-9A-Fa-f]+$/.test(input.trim()) && input.length <= 8)
+  if (/^[0-9A-Fa-f]+$/.test(input.trim()) && input.length == 8)
     return true;
   return false;
 }
 
 function isValidBinary(input) {
-  if (/^[01]+$/.test(input.trim()))
+  if (/^[01]+$/.test(input.trim()) && input.length == 32)
     return true;
   return false;
 }
