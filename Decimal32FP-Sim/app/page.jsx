@@ -109,21 +109,37 @@ export default function TestPage() {
     };
 
     return (
-      <Box sx={{backgroundColor: 'white', color: 'black'}}>
+      <Box sx={{ color: 'black'}}>
         <Container
           sx={{
+            backgroundColor: 'white',
+            borderRadius: 10,
+            position: 'absolute',
+            top: 100,
+            left: 100,
+            textAlign: 'center',
           }}
         >
+          <Typography 
+            variant='h5'
+            sx={{
+              mt: 5,
+              mb: 3,
+              fontStyle: 'italic',
+            }}
+          >
+            IEEE-754 Decimal32 FP Translator
+          </Typography>
+
           {/* Container for inputs */}
           <div
             style={{
-              width: 500,
+              width: "100%",
+              display: 'flex',
+              textAlign: 'center',
             }}
           >
-            <Grid container 
-              sx={{
-              }}
-            >
+            <Grid container>
               <Grid item xs={12}>
                 <Typography variant='h5'>Hex Input</Typography>
               </Grid>
@@ -197,41 +213,47 @@ export default function TestPage() {
             </Grid>
           </div>
 
-          {/* Result Toggle Filter */}
-          {/* <input type="range" min="0" max="1" step="1" onChange={handleTogglePoint} /> */}
-          <Switch 
-            checked={point}
-            onChange={handleTogglePoint}
-          />
-          <h5>{point ? 'Fixed Point' : 'Floating Point'}</h5>
-          
           {/* Container for results */}
           <div
             style={{
               display: 'inline-block',
-              width: 500,
+              width: "100%",
               height: 250,
+              textAlign: 'center'
             }}
           >
+
+            {/* Result Toggle Filter */}
+            {/* <input type="range" min="0" max="1" step="1" onChange={handleTogglePoint} /> */}
+            <Switch 
+              checked={point}
+              onChange={handleTogglePoint}
+            />
+            
+            <h5 style={{margin: 5}}>{point ? 'Fixed Point' : 'Floating Point'}</h5>
+          
             <Typography variant='h5'>Result</Typography>
             {/* {result && <h5>Dec 32 Equivalent: {result}</h5>} */}
             {
               (result && point) ? 
-                <Typography>{resultFixed}</Typography>
+                <Typography sx={{textAlign: 'center'}}>{resultFixed}</Typography>
               : (result && !point) ?
                 <Typography>{result}</Typography>
               : <Typography>No output.</Typography>
             }
+
+            <br></br>
+            <Grid container>
+              <Grid item xs={6}>
+                <Button onClick={handleCopyClick} variant='contained' fullWidth>Copy Result to Clipboard</Button>
+              </Grid>
+              <br></br>
+              <Grid item xs={6}>
+                <Button onClick={handleSaveClick} variant='contained' fullWidth>Save Result as Text File</Button>
+              </Grid>
+              <br></br>
+            </Grid>
           </div>
-          <br/>
-          <Grid item xs={12}>
-            <Button onClick={handleCopyClick} variant='contained'>Copy Result to Clipboard</Button>
-          </Grid>
-          <br></br>
-          <Grid item xs={12}>
-            <Button onClick={handleSaveClick} variant='contained'>Save Result as Text File</Button>
-          </Grid>
-          <br></br>
         </Container>
       </Box>
     );
