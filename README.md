@@ -38,7 +38,7 @@ Binary to Decimal32
 ## Dev Notes
 This project is built under the Next.JS React framework with the whole application contained within the [Decimal32FP-Sim](/Decimal32FP-Sim) folder. Page rendering and functions are all found within [Decimal32FP-Sim/app/page.jsx](/Decimal32FP-Sim/app/page.jsx) with page components and styling built completely using the MUI React Library.
 
-**Running the Project**
+**Running the Project** \
 *note: clone this project first on your machine before doing the following steps*
 1. On your terminal, do > `cd Decimal32FP-Sim`
 2. also do > `npm install`
