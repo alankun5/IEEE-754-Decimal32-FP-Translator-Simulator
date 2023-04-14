@@ -171,7 +171,7 @@ export default function TestPage() {
                     id='hex-input'
                     value={value}
                     onChange={handleInputChange}
-                    inputProps= {{ pattern: "[0-9A-Fa-f]*", /*maxLength: 8*/ }}
+                    inputProps= {{ pattern: "[0-9A-Fa-f]*", maxLength: 8 }}
                     />
                 </Grid>
                 <Grid item xs={12}>
