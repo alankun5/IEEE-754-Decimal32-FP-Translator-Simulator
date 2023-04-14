@@ -1,5 +1,5 @@
 "use client"
-import { TextField, Box, Button, Typography, Switch, Container, Grid, Slider } from '@mui/material';
+import { TextField, Box, Button, Typography, Switch, Container, Grid, Slider, Snackbar, Alert } from '@mui/material';
 import React from 'react';
 import { useEffect, useState } from 'react';
 
@@ -12,8 +12,13 @@ const specialCases = [
 export default function TestPage() {
     const [point, togglePoint] = useState(false); // false: Floating Point, true: Fixed Point
     const [result, setResult] = useState(""); // Floating Point
-    // experimental
     const [resultFixed, setResultFixed] = useState(""); // Fixed Point
+
+    // misc
+    const [copied, setCopied] = useState(false);
+    const [hexInvalid, setHexInvalid] = useState(false);
+
+
 
     // For hex input
     const [value, setValue] = useState("");
@@ -25,6 +30,7 @@ export default function TestPage() {
     const [coefficient, setCoefficient] = useState("");
   
     const handleInputChange = (e) => {
+      setHexInvalid(false);
       if (e.target.validity.valid)
         setValue(e.target.value);
       else
@@ -37,8 +43,10 @@ export default function TestPage() {
 
     const handleHexClick = () => {
       const convertedDec = convertHex(value); 
-      if (convertedDec.toString() === "Invalid input.")
-        alert("Invalid input.");
+      if (convertedDec.toString() === "Invalid input.") {
+        //alert("Invalid input.");
+        setHexInvalid(true);
+      }
       else if (specialCases.includes(convertedDec.toString())) {
         setResult(convertedDec.toString());
         setResultFixed(convertedDec.toString());
@@ -69,10 +77,18 @@ export default function TestPage() {
     };
 
     const handleCopyClick = () => {
+      setCopied(true);
       if (point)
         navigator.clipboard.writeText(resultFixed);
       else
         navigator.clipboard.writeText(result);
+    };
+
+    const handleClose = (event, reason) => {
+      if(reason === 'clickaway')
+        return;
+
+      setCopied(false);
     };
 
     const handleSaveClick = () => {
@@ -126,6 +142,7 @@ export default function TestPage() {
               mt: 5,
               mb: 3,
               fontStyle: 'italic',
+              fontFamily: 'monospace',
             }}
           >
             IEEE-754 Decimal32 FP Translator
@@ -141,10 +158,14 @@ export default function TestPage() {
           >
             <Grid container>
               <Grid item xs={12}>
-                <Typography variant='h5'>Hex Input</Typography>
+                <Typography variant='h5' sx={{fontFamily: 'monospace',}}>
+                  Hex
+                </Typography>
               </Grid>
               <Grid item xs={12}>
                 <TextField 
+                  error={hexInvalid}
+                  helperText={hexInvalid? 'Invalid input.': 'Must be 8 characters long. (Ex: 1234ABCD)'}
                   label='Hexadecimal' 
                   id='hex-input'
                   value={value}
@@ -153,7 +174,17 @@ export default function TestPage() {
                   />
               </Grid>
               <Grid item xs={12}>
-                <Button onClick={handleHexClick} variant='contained'>Convert Hex to Dec32</Button>
+                <Button 
+                  onClick={handleHexClick} 
+                  variant='contained'
+                  sx={{
+                    '&:hover': {
+                      bgcolor: '#7997f2',
+                    },
+                  }}
+                >
+                  Convert Hex to Dec32
+                </Button>
               </Grid>
             </Grid>
 
@@ -161,8 +192,8 @@ export default function TestPage() {
 
             <Grid container>
               <Grid item xs={12}>
-                <Typography variant='h5'>
-                  Binary Input
+                <Typography variant='h5' sx={{fontFamily: 'monospace',}}>
+                  Binary
                 </Typography>
               </Grid>
               <Grid item xs={6}>
@@ -206,6 +237,11 @@ export default function TestPage() {
                   type='submit' 
                   variant='contained' 
                   onClick={handleBinaryClick}
+                  sx={{
+                    '&:hover': {
+                      bgcolor: '#7997f2',
+                    }
+                  }}
                 >
                   Convert Binary to Dec32
                 </Button>
@@ -230,7 +266,9 @@ export default function TestPage() {
               onChange={handleTogglePoint}
             />
           
-            <Typography variant='h6'>Result as {point? 'Fixed Point' : 'Floating Point'}</Typography>
+            <Typography variant='h6' sx={{fontFamily: 'monospace',}}>
+              Result as {point? 'Fixed Point' : 'Floating Point'}
+            </Typography>
             {/* {result && <h5>Dec 32 Equivalent: {result}</h5>} */}
             {
               (result && point) ? 
@@ -241,17 +279,47 @@ export default function TestPage() {
             }
 
             <br></br>
-            <Grid container>
-              <Grid item xs={6}>
-                <Button onClick={handleCopyClick} variant='contained' fullWidth>Copy Result to Clipboard</Button>
-              </Grid>
-              <br></br>
-              <Grid item xs={6}>
-                <Button onClick={handleSaveClick} variant='contained' fullWidth>Save Result as Text File</Button>
-              </Grid>
-              <br></br>
-            </Grid>
+
+            <Button 
+              onClick={handleCopyClick} 
+              variant='contained'
+              sx={{
+                bgcolor: 'green',
+                '&:hover': {
+                  bgcolor: '#11c123'
+                }
+              }}
+            >
+              Copy Result to Clipboard
+            </Button>
+            <Button 
+              onClick={handleSaveClick} 
+              variant='contained'  
+              sx={{
+                bgcolor: 'green',
+                '&:hover': {
+                  bgcolor: '#11c123'
+                }
+              }}
+            >
+              Save Result as Text File
+            </Button>
           </div>
+          <Snackbar 
+            open={copied} 
+            onClose={handleClose}
+            autoHideDuration={2000}
+          >
+              <Alert
+                severity='success'
+                onClose={handleClose}
+                sx={{
+                  bgcolor: 'yellowgreen'
+                }}
+              >
+                Copied to clipboard!
+              </Alert>
+          </Snackbar>
         </Container>
       </Box>
     );
