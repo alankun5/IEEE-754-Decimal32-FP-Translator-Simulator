@@ -229,10 +229,8 @@ export default function TestPage() {
               checked={point}
               onChange={handleTogglePoint}
             />
-            
-            <h5 style={{margin: 5}}>{point ? 'Fixed Point' : 'Floating Point'}</h5>
           
-            <Typography variant='h5'>Result</Typography>
+            <Typography variant='h6'>Result as {point? 'Fixed Point' : 'Floating Point'}</Typography>
             {/* {result && <h5>Dec 32 Equivalent: {result}</h5>} */}
             {
               (result && point) ? 
