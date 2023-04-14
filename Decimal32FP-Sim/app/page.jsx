@@ -126,201 +126,203 @@ export default function TestPage() {
 
     return (
       <Box sx={{ color: 'black'}}>
-        <Container
+        <Grid container
           sx={{
             backgroundColor: 'white',
             borderRadius: 10,
             position: 'absolute',
             top: 100,
-            left: 100,
             textAlign: 'center',
           }}
         >
-          <Typography 
-            variant='h5'
-            sx={{
-              mt: 5,
-              mb: 3,
-              fontStyle: 'italic',
-              fontFamily: 'monospace',
-            }}
-          >
-            IEEE-754 Decimal32 FP Translator
-          </Typography>
-
-          {/* Container for inputs */}
-          <div
-            style={{
-              width: "100%",
-              display: 'flex',
-              textAlign: 'center',
-            }}
-          >
-            <Grid container>
-              <Grid item xs={12}>
-                <Typography variant='h5' sx={{fontFamily: 'monospace',}}>
-                  Hex
-                </Typography>
-              </Grid>
-              <Grid item xs={12}>
-                <TextField 
-                  error={hexInvalid}
-                  helperText={hexInvalid? 'Invalid input.': 'Must be 8 characters long. (Ex: 1234ABCD)'}
-                  label='Hexadecimal' 
-                  id='hex-input'
-                  value={value}
-                  onChange={handleInputChange}
-                  inputProps= {{ pattern: "[0-9A-Fa-f]*", /*maxLength: 8*/ }}
-                  />
-              </Grid>
-              <Grid item xs={12}>
-                <Button 
-                  onClick={handleHexClick} 
-                  variant='contained'
-                  sx={{
-                    '&:hover': {
-                      bgcolor: '#7997f2',
-                    },
-                  }}
-                >
-                  Convert Hex to Dec32
-                </Button>
-              </Grid>
-            </Grid>
-
-            <br></br>
-
-            <Grid container>
-              <Grid item xs={12}>
-                <Typography variant='h5' sx={{fontFamily: 'monospace',}}>
-                  Binary
-                </Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <TextField 
-                  label='Sign' 
-                  defaultValue={''}
-                  inputProps = {{ pattern: "[01]", maxLength: 1 }}
-                  onChange={e => setSign(e.target.value)}
-                  fullWidth
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <TextField 
-                  label='Combination' 
-                  defaultValue={''}
-                  inputProps = {{ pattern: "[01]*", maxLength: 5 }}
-                  onChange={e => setCombination(e.target.value)}
-                  fullWidth
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <TextField 
-                  label='Exponent Continuation' 
-                  defaultValue={''}
-                  inputProps = {{ pattern: "[01]*", maxLength: 6 }}
-                  onChange={e => setExponent(e.target.value)}
-                  fullWidth
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <TextField 
-                  label='Coefficient Continuation' 
-                  defaultValue={''}
-                  inputProps = {{ pattern: "[01]*", maxLength: 20 }}
-                  onChange={e => setCoefficient(e.target.value)}
-                  fullWidth
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <Button 
-                  type='submit' 
-                  variant='contained' 
-                  onClick={handleBinaryClick}
-                  sx={{
-                    '&:hover': {
-                      bgcolor: '#7997f2',
-                    }
-                  }}
-                >
-                  Convert Binary to Dec32
-                </Button>
-              </Grid>
-            </Grid>
-          </div>
-
-          {/* Container for results */}
-          <div
-            style={{
-              display: 'inline-block',
-              width: "100%",
-              height: 250,
-              textAlign: 'center'
-            }}
-          >
-
-            {/* Result Toggle Filter */}
-            {/* <input type="range" min="0" max="1" step="1" onChange={handleTogglePoint} /> */}
-            <Switch 
-              checked={point}
-              onChange={handleTogglePoint}
-            />
-          
-            <Typography variant='h6' sx={{fontFamily: 'monospace',}}>
-              Result as {point? 'Fixed Point' : 'Floating Point'}
+          <Grid item xs={12}>
+            <Typography 
+              variant='h5'
+              sx={{
+                mt: 5,
+                mb: 3,
+                fontStyle: 'italic',
+                fontFamily: 'monospace',
+                textAlign: 'center',
+              }}
+            >
+              IEEE-754 Decimal32 FP Translator
             </Typography>
-            {/* {result && <h5>Dec 32 Equivalent: {result}</h5>} */}
-            {
-              (result && point) ? 
-                <Typography sx={{textAlign: 'center'}}>{resultFixed}</Typography>
-              : (result && !point) ?
-                <Typography>{result}</Typography>
-              : <Typography>No output.</Typography>
-            }
 
-            <br></br>
-
-            <Button 
-              onClick={handleCopyClick} 
-              variant='contained'
-              sx={{
-                bgcolor: 'green',
-                '&:hover': {
-                  bgcolor: '#11c123'
-                }
+            {/* Container for inputs */}
+            <div
+              style={{
+                width: "100%",
+                display: 'flex',
+                textAlign: 'center',
               }}
             >
-              Copy Result to Clipboard
-            </Button>
-            <Button 
-              onClick={handleSaveClick} 
-              variant='contained'  
-              sx={{
-                bgcolor: 'green',
-                '&:hover': {
-                  bgcolor: '#11c123'
-                }
+              <Grid container>
+                <Grid item xs={12}>
+                  <Typography variant='h5' sx={{fontFamily: 'monospace',}}>
+                    Hex
+                  </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField 
+                    error={hexInvalid}
+                    helperText={hexInvalid? 'Invalid input.': 'Must be 8 characters long. (Ex: 1234ABCD)'}
+                    label='Hexadecimal' 
+                    id='hex-input'
+                    value={value}
+                    onChange={handleInputChange}
+                    inputProps= {{ pattern: "[0-9A-Fa-f]*", /*maxLength: 8*/ }}
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                  <Button 
+                    onClick={handleHexClick} 
+                    variant='contained'
+                    sx={{
+                      '&:hover': {
+                        bgcolor: '#7997f2',
+                      },
+                    }}
+                  >
+                    Convert Hex to Dec32
+                  </Button>
+                </Grid>
+              </Grid>
+
+              <br></br>
+
+              <Grid container sx={{marginRight: "10%"}}>
+                <Grid item xs={12}>
+                  <Typography variant='h5' sx={{fontFamily: 'monospace',}}>
+                    Binary
+                  </Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField 
+                    label='Sign' 
+                    defaultValue={''}
+                    inputProps = {{ pattern: "[01]", maxLength: 1 }}
+                    onChange={e => setSign(e.target.value)}
+                    fullWidth
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField 
+                    label='Combination' 
+                    defaultValue={''}
+                    inputProps = {{ pattern: "[01]*", maxLength: 5 }}
+                    onChange={e => setCombination(e.target.value)}
+                    fullWidth
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField 
+                    label='Exponent Continuation' 
+                    defaultValue={''}
+                    inputProps = {{ pattern: "[01]*", maxLength: 6 }}
+                    onChange={e => setExponent(e.target.value)}
+                    fullWidth
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField 
+                    label='Coefficient Continuation' 
+                    defaultValue={''}
+                    inputProps = {{ pattern: "[01]*", maxLength: 20 }}
+                    onChange={e => setCoefficient(e.target.value)}
+                    fullWidth
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <Button 
+                    type='submit' 
+                    variant='contained' 
+                    onClick={handleBinaryClick}
+                    sx={{
+                      '&:hover': {
+                        bgcolor: '#7997f2',
+                      }
+                    }}
+                  >
+                    Convert Binary to Dec32
+                  </Button>
+                </Grid>
+              </Grid>
+            </div>
+
+            {/* Container for results */}
+            <div
+              style={{
+                display: 'inline-block',
+                width: "100%",
+                height: 250,
+                textAlign: 'center'
               }}
             >
-              Save Result as Text File
-            </Button>
-          </div>
-          <Snackbar 
-            open={copied} 
-            onClose={handleClose}
-            autoHideDuration={2000}
-          >
-              <Alert
-                severity='success'
-                onClose={handleClose}
+
+              {/* Result Toggle Filter */}
+              {/* <input type="range" min="0" max="1" step="1" onChange={handleTogglePoint} /> */}
+              <Switch 
+                checked={point}
+                onChange={handleTogglePoint}
+              />
+            
+              <Typography variant='h6' sx={{fontFamily: 'monospace',}}>
+                Result as {point? 'Fixed Point' : 'Floating Point'}
+              </Typography>
+              {/* {result && <h5>Dec 32 Equivalent: {result}</h5>} */}
+              {
+                (result && point) ? 
+                  <Typography sx={{textAlign: 'center'}}>{resultFixed}</Typography>
+                : (result && !point) ?
+                  <Typography>{result}</Typography>
+                : <Typography>No output.</Typography>
+              }
+
+              <br></br>
+
+              <Button 
+                onClick={handleCopyClick} 
+                variant='contained'
                 sx={{
-                  bgcolor: 'yellowgreen'
+                  bgcolor: 'green',
+                  '&:hover': {
+                    bgcolor: '#11c123'
+                  }
                 }}
               >
-                Copied to clipboard!
-              </Alert>
-          </Snackbar>
-        </Container>
+                Copy Result to Clipboard
+              </Button>
+              <Button 
+                onClick={handleSaveClick} 
+                variant='contained'  
+                sx={{
+                  bgcolor: 'green',
+                  '&:hover': {
+                    bgcolor: '#11c123'
+                  }
+                }}
+              >
+                Save Result as Text File
+              </Button>
+            </div>
+            <Snackbar 
+              open={copied} 
+              onClose={handleClose}
+              autoHideDuration={2000}
+            >
+                <Alert
+                  severity='success'
+                  onClose={handleClose}
+                  sx={{
+                    bgcolor: 'yellowgreen'
+                  }}
+                >
+                  Copied to clipboard!
+                </Alert>
+            </Snackbar>
+          </Grid>
+        </Grid>
       </Box>
     );
 }
